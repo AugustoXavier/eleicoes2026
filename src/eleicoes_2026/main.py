@@ -3,6 +3,7 @@ from __future__ import annotations
 import base64
 import binascii
 import json
+import os
 import threading
 import time
 from datetime import datetime
@@ -717,8 +718,13 @@ class DashboardHandler(BaseHTTPRequestHandler):
 
 
 def main() -> None:
-    server = ThreadingHTTPServer(("127.0.0.1", 8000), DashboardHandler)
-    print("Painel disponível em http://127.0.0.1:8000")
+    port = int(os.environ.get("PORT", "8000"))
+    if not 1 <= port <= 65535:
+        raise ValueError("A porta do servidor deve estar entre 1 e 65535.")
+
+    server = ThreadingHTTPServer(("0.0.0.0", port), DashboardHandler)
+    print(f"Painel disponível na porta {port}.")
+    print(f"Neste computador, abra http://127.0.0.1:{port}")
     print("Pressione Ctrl+C para encerrar.")
     try:
         server.serve_forever()

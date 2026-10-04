@@ -19,6 +19,17 @@ python -m eleicoes_2026.main
 
 Abra [http://127.0.0.1:8000](http://127.0.0.1:8000) no navegador e selecione a eleição, o cargo e o estado. O campo de cidade permite filtrar a apuração para um município; deixe **Todas as cidades do estado** selecionado para ver o total estadual. O painel atualiza os resultados a cada 30 segundos; o botão **Atualizar agora** permite consultar antes.
 
+## Publicar na internet com Render
+
+O repositório inclui `render.yaml` para criar um serviço web gratuito no Render:
+
+1. Entre em [render.com](https://render.com/) e escolha **New > Blueprint**.
+2. Conecte sua conta GitHub e selecione `AugustoXavier/eleicoes2026`.
+3. Revise o serviço `eleicoes2026` e escolha **Apply**.
+4. Quando o serviço ficar com status **Live**, abra a URL `https://eleicoes2026.onrender.com` exibida no painel do Render e compartilhe-a.
+
+O Render instala o projeto e inicia o servidor usando a porta fornecida pela plataforma. O painel é público e não exige login; qualquer pessoa com o endereço poderá acessá-lo. No plano gratuito, o serviço pode suspender quando ficar inativo e demorar alguns instantes para responder no primeiro acesso.
+
 Use o filtro **Legenda** para exibir somente os candidatos do partido selecionado. Os totais de votos e de seções continuam representando toda a localidade, mesmo quando a lista de candidatos está filtrada.
 
 Os candidatos que aparecem dentro das vagas estimadas são destacados em verde. Para presidente e governador, se ninguém ultrapassar 50% dos votos válidos, o destaque indica os dois mais votados, que disputariam o segundo turno; se alguém ultrapassar a maioria absoluta, o painel destaca esse candidato. Votos brancos e nulos não entram no cálculo. Esses destaques sempre usam o resultado nacional para presidente e estadual para governador, mesmo se a lista de votos estiver filtrada por cidade. Para senador e para deputado federal, estadual e distrital, o destaque considera o número de vagas e, nos cargos proporcionais, as vagas atribuídas pelo TSE a cada legenda, a votação individual e o mínimo legal de votos. As indicações são estimativas durante a apuração, não uma declaração de resultado final.

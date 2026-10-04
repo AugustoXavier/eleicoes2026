@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: eleicoes2026
+    runtime: python
+    plan: free
+    buildCommand: python -m pip install -e .
+    startCommand: python -m eleicoes_2026.main
+    healthCheckPath: /
+    autoDeploy: true

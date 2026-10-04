@@ -1,7 +1,8 @@
 import base64
 import json
+import os
 import unittest
-from unittest.mock import call, patch
+from unittest.mock import Mock, call, patch
 
 from eleicoes_2026 import main
 
@@ -48,6 +49,30 @@ class JwsPayloadTests(unittest.TestCase):
 
 
 class ElectionConfigurationTests(unittest.TestCase):
+    def test_server_uses_port_from_environment_and_listens_on_all_interfaces(self) -> None:
+        server = Mock()
+        with (
+            patch.dict(os.environ, {"PORT": "9123"}),
+            patch.object(main, "ThreadingHTTPServer", return_value=server) as create_server,
+            patch("builtins.print"),
+        ):
+            main.main()
+
+        create_server.assert_called_once_with(("0.0.0.0", 9123), main.DashboardHandler)
+        server.serve_forever.assert_called_once()
+        server.server_close.assert_called_once()
+
+    def test_server_defaults_to_port_8000(self) -> None:
+        server = Mock()
+        with (
+            patch.dict(os.environ, {}, clear=True),
+            patch.object(main, "ThreadingHTTPServer", return_value=server) as create_server,
+            patch("builtins.print"),
+        ):
+            main.main()
+
+        create_server.assert_called_once_with(("0.0.0.0", 8000), main.DashboardHandler)
+
     def test_lists_presidential_and_state_elections_with_available_offices(self) -> None:
         config = {
             "pl": [
