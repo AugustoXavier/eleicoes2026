@@ -1,0 +1,2 @@
+# Dependências do projeto
+# Adicione aqui bibliotecas necessárias para análise, web ou automação.

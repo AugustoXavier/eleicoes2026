@@ -1,0 +1,19 @@
+[project]
+name = "eleicoes-2026"
+version = "0.1.0"
+description = "Template inicial para projeto de eleições 2026"
+readme = "README.md"
+requires-python = ">=3.11"
+authors = [
+  { name = "Seu Nome" }
+]
+
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]

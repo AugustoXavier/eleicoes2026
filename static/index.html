@@ -1,0 +1,593 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#0e3b35">
+    <title>Apuração eleitoral 2026</title>
+    <style>
+      :root {
+        color-scheme: light;
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        color: #172a26;
+        background: #f1f5f2;
+        font-synthesis: none;
+        text-rendering: optimizeLegibility;
+      }
+
+      * { box-sizing: border-box; }
+      body { margin: 0; min-width: 320px; }
+      button, select { font: inherit; }
+      .topbar { background: #0e3b35; color: #fff; }
+      .topbar-inner, main, footer { width: min(100% - 36px, 1080px); margin: 0 auto; }
+      .topbar-inner { min-height: 74px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+      .brand { display: flex; align-items: center; gap: 12px; }
+      .brand-mark { width: 38px; height: 38px; display: grid; place-items: center; border: 1px solid #ffffff70; border-radius: 12px; font-weight: 800; }
+      .brand-title { margin: 0; font-size: 16px; font-weight: 700; }
+      .brand-subtitle { margin: 3px 0 0; color: #c6ded6; font-size: 12px; }
+      .source-badge { color: #d8f4df; border: 1px solid #6eaa8c; border-radius: 999px; padding: 7px 11px; font-size: 12px; white-space: nowrap; }
+      main { padding: 42px 0 56px; }
+      .intro { margin-bottom: 26px; }
+      .eyebrow { margin: 0 0 8px; color: #28755d; font-size: 12px; font-weight: 800; letter-spacing: .09em; text-transform: uppercase; }
+      h1 { margin: 0; color: #123b34; font-size: clamp(28px, 5vw, 40px); letter-spacing: -.04em; }
+      .intro-copy { max-width: 620px; margin: 10px 0 0; color: #5c6e67; line-height: 1.6; }
+      .notice { display: flex; gap: 11px; align-items: flex-start; padding: 14px 16px; margin: 20px 0 24px; border: 1px solid #d5e7da; border-radius: 10px; background: #eaf4ed; color: #365b48; font-size: 13px; line-height: 1.55; }
+      .notice-icon { color: #278457; font-size: 17px; font-weight: 800; line-height: 1.2; }
+      .controls { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)) auto; align-items: end; gap: 12px; margin-bottom: 18px; }
+      .field { display: grid; gap: 7px; min-width: 0; }
+      .field label { color: #4e635a; font-size: 12px; font-weight: 700; }
+      select, .refresh-button { min-height: 44px; border: 1px solid #d4e0d9; border-radius: 10px; background: #fff; color: #172a26; }
+      select { width: 100%; padding: 0 13px; }
+      .refresh-button { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 0 15px; cursor: pointer; font-weight: 700; }
+      .refresh-button:hover { border-color: #88b9a0; background: #f8fcf9; }
+      .refresh-button:disabled { cursor: wait; opacity: .65; }
+      .status { min-height: 50px; display: flex; align-items: center; gap: 10px; padding: 12px 15px; margin: 0 0 18px; border: 1px solid #dbe7df; border-radius: 10px; background: #fff; color: #4e635a; font-size: 13px; }
+      .status.error { border-color: #f0c4bb; background: #fff8f6; color: #9c3826; }
+      .status-dot { width: 9px; height: 9px; flex: 0 0 9px; border-radius: 50%; background: #36a66b; box-shadow: 0 0 0 4px #36a66b1c; }
+      .status.error .status-dot { background: #c54b35; box-shadow: 0 0 0 4px #c54b351c; }
+      .updated { margin-left: auto; color: #7a8c84; white-space: nowrap; }
+      .metrics { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 14px; margin-bottom: 18px; }
+      .metric, .results-card { border: 1px solid #e0e9e3; border-radius: 13px; background: #fff; box-shadow: 0 3px 12px #1c3c2910; }
+      .metric { min-height: 112px; padding: 19px; }
+      .metric-label { margin: 0; color: #71827a; font-size: 12px; font-weight: 700; }
+      .metric-value { display: block; margin-top: 9px; color: #153f35; font-size: 25px; font-weight: 800; letter-spacing: -.03em; }
+      .progress-track { height: 7px; margin-top: 11px; overflow: hidden; border-radius: 999px; background: #e7eee9; }
+      .progress-fill { height: 100%; width: 0; border-radius: inherit; background: #27a268; transition: width .35s ease; }
+      .results-card { overflow: hidden; }
+      .card-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 14px; padding: 19px 21px; border-bottom: 1px solid #edf1ee; }
+      .card-heading h2 { margin: 0; color: #173b32; font-size: 17px; }
+      .results-details { display: grid; gap: 4px; justify-items: end; }
+      .card-heading p { margin: 0; color: #78877f; font-size: 12px; }
+      .seat-legend { display: flex; align-items: center; gap: 7px; color: #526b5d !important; }
+      .seat-legend-mark { width: 12px; height: 12px; border: 1px solid #69a77a; border-radius: 3px; background: #e5f4e8; }
+      .candidate-list { padding: 0 21px; }
+      .candidate { display: grid; grid-template-columns: 38px minmax(0, 1fr) 112px 74px; align-items: center; gap: 14px; min-height: 77px; border-bottom: 1px solid #edf1ee; }
+      .candidate--in-seat { background: #f0f8f1; box-shadow: inset 3px 0 #41965c; }
+      .candidate--elected { background: #e2f2e4; box-shadow: inset 4px 0 #16723a; }
+      .candidate:last-child { border-bottom: 0; }
+      .candidate-rank { width: 32px; height: 32px; display: grid; place-items: center; border-radius: 9px; background: #edf5ef; color: #28644d; font-size: 13px; font-weight: 800; }
+      .candidate--in-seat .candidate-rank { background: #dcefe0; color: #176135; }
+      .candidate--elected .candidate-rank { background: #c7e8ce; color: #115b2e; }
+      .candidate-identity { display: flex; align-items: center; gap: 11px; min-width: 0; }
+      .candidate-info { display: grid; gap: 5px; min-width: 0; }
+      .candidate-photo { position: relative; width: 44px; height: 52px; flex: 0 0 44px; overflow: hidden; display: grid; place-items: center; border: 1px solid #dce7df; border-radius: 8px; background: #edf5ef; color: #28644d; font-size: 13px; font-weight: 800; }
+      .candidate-photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+      .candidate-title { display: flex; align-items: center; gap: 8px; min-width: 0; }
+      .candidate-name { overflow: hidden; color: #243a33; font-size: 14px; font-weight: 750; text-overflow: ellipsis; white-space: nowrap; }
+      .candidate-seat-badge { flex: 0 0 auto; padding: 3px 6px; border: 1px solid #b5d8bd; border-radius: 999px; background: #e2f2e5; color: #23643a; font-size: 9px; font-weight: 800; letter-spacing: .04em; }
+      .candidate--elected .candidate-seat-badge { border-color: #16723a; background: #16723a; color: #fff; }
+      .candidate-party { margin-top: 5px; color: #7b8983; font-size: 12px; }
+      .candidate-votes { color: #24493d; font-size: 14px; font-weight: 750; text-align: right; white-space: nowrap; }
+      .candidate-percent { color: #536b60; font-size: 13px; text-align: right; white-space: nowrap; }
+      .empty-state { padding: 30px 20px; color: #65776f; font-size: 14px; text-align: center; }
+      .empty-state[hidden], .results[hidden] { display: none; }
+      footer { padding-bottom: 28px; color: #78877f; font-size: 12px; line-height: 1.6; }
+      footer a { color: #267251; font-weight: 700; }
+      @media (max-width: 620px) {
+        .topbar-inner, main, footer { width: min(100% - 28px, 1080px); }
+        .source-badge { font-size: 11px; padding: 6px 8px; }
+        main { padding-top: 30px; }
+        .controls { grid-template-columns: 1fr; align-items: stretch; }
+        .refresh-button { width: 100%; }
+        .status { flex-wrap: wrap; }
+        .updated { width: 100%; margin: 0 0 0 19px; }
+        .metrics { grid-template-columns: 1fr; gap: 10px; }
+        .metric { min-height: auto; padding: 15px 17px; }
+        .metric-value { font-size: 22px; }
+        .candidate-list { padding: 0 13px; }
+        .candidate { grid-template-columns: 32px minmax(0, 1fr) 82px; gap: 8px; min-height: 72px; }
+        .candidate-photo { width: 40px; height: 48px; flex-basis: 40px; }
+        .candidate-identity { gap: 8px; }
+        .candidate-info { gap: 4px; }
+        .candidate-percent { grid-column: 3; grid-row: 1; align-self: end; margin-bottom: 11px; font-size: 11px; }
+        .candidate-votes { grid-column: 3; grid-row: 1; align-self: start; margin-top: 11px; font-size: 12px; }
+        .candidate-name { font-size: 13px; }
+        .candidate-seat-badge { padding: 2px 5px; font-size: 8px; }
+        .card-heading { align-items: start; flex-direction: column; padding: 17px; gap: 5px; }
+        .results-details { justify-items: start; }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="topbar-inner">
+        <div class="brand">
+          <div class="brand-mark" aria-hidden="true">26</div>
+          <div>
+            <p class="brand-title">Eleições 2026</p>
+            <p class="brand-subtitle">Acompanhamento da apuração</p>
+          </div>
+        </div>
+        <span class="source-badge">Fonte oficial: TSE</span>
+      </div>
+    </header>
+
+    <main>
+      <section class="intro">
+        <p class="eyebrow">Apuração oficial, direto do TSE</p>
+        <h1>Resultado em tempo real</h1>
+        <p class="intro-copy">Acompanhe a totalização dos votos e a votação dos candidatos. Os dados são atualizados automaticamente conforme a divulgação oficial.</p>
+      </section>
+
+      <aside class="notice" role="note">
+        <span class="notice-icon" aria-hidden="true">i</span>
+        <span>As urnas fecham às <strong>17h (horário de Brasília)</strong>. A totalização dos votos aparece conforme o TSE recebe e divulga os resultados.</span>
+      </aside>
+
+      <section class="controls" aria-label="Controles do painel">
+        <div class="field">
+          <label for="election-select">Eleição</label>
+          <select id="election-select" disabled>
+            <option>Carregando eleições disponíveis...</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="cargo-select">Cargo</label>
+          <select id="cargo-select" disabled>
+            <option>Selecione um cargo</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="state-select">Estado</label>
+          <select id="state-select" disabled>
+            <option>Carregando estados...</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="municipality-select">Cidade</label>
+          <select id="municipality-select" disabled>
+            <option>Todas as cidades</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="party-select">Legenda</label>
+          <select id="party-select" disabled>
+            <option value="">Todas as legendas</option>
+          </select>
+        </div>
+        <button class="refresh-button" id="refresh-button" type="button">
+          <span aria-hidden="true">↻</span> Atualizar agora
+        </button>
+      </section>
+
+      <div class="status" id="status" role="status" aria-live="polite">
+        <span class="status-dot" aria-hidden="true"></span>
+        <span id="status-message">Conectando à API do TSE...</span>
+        <span class="updated" id="updated"></span>
+      </div>
+
+      <section class="results" id="results" hidden>
+        <div class="metrics">
+          <article class="metric">
+            <p class="metric-label">Seções totalizadas</p>
+            <strong class="metric-value" id="sections-value">—</strong>
+            <div class="progress-track" aria-label="Percentual de seções totalizadas">
+              <div class="progress-fill" id="progress-fill"></div>
+            </div>
+          </article>
+          <article class="metric">
+            <p class="metric-label">Votos válidos</p>
+            <strong class="metric-value" id="valid-votes">—</strong>
+          </article>
+          <article class="metric">
+            <p class="metric-label">Votos computados</p>
+            <strong class="metric-value" id="total-votes">—</strong>
+          </article>
+          <article class="metric">
+            <p class="metric-label">Votos brancos</p>
+            <strong class="metric-value" id="blank-votes">—</strong>
+          </article>
+          <article class="metric">
+            <p class="metric-label">Votos nulos</p>
+            <strong class="metric-value" id="null-votes">—</strong>
+          </article>
+        </div>
+
+        <article class="results-card">
+          <div class="card-heading">
+            <h2 id="candidates-title">Votação para presidente</h2>
+            <div class="results-details">
+              <p id="sections-detail"></p>
+              <p id="candidate-count"></p>
+              <p class="seat-legend" title="A indicação considera as vagas divulgadas pelo TSE.">
+                <span class="seat-legend-mark" aria-hidden="true"></span>
+                Dentro das vagas (estimativa atual)
+              </p>
+            </div>
+          </div>
+          <div class="candidate-list" id="candidate-list"></div>
+          <div class="empty-state" id="empty-state" hidden>
+            O TSE ainda não publicou a votação dos candidatos para esta eleição.
+          </div>
+        </article>
+      </section>
+    </main>
+
+    <footer>
+      Dados oficiais do Tribunal Superior Eleitoral (TSE). A divulgação pode sofrer atrasos ou interrupções na origem.
+      <span id="official-link-container"></span>
+    </footer>
+
+    <script>
+      const electionSelect = document.getElementById("election-select");
+      const cargoSelect = document.getElementById("cargo-select");
+      const stateSelect = document.getElementById("state-select");
+      const municipalitySelect = document.getElementById("municipality-select");
+      const partySelect = document.getElementById("party-select");
+      const refreshButton = document.getElementById("refresh-button");
+      const statusBox = document.getElementById("status");
+      const statusMessage = document.getElementById("status-message");
+      const updated = document.getElementById("updated");
+      const resultsSection = document.getElementById("results");
+      const candidateList = document.getElementById("candidate-list");
+      const emptyState = document.getElementById("empty-state");
+      const numberFormat = new Intl.NumberFormat("pt-BR");
+      let elections = [];
+      let currentCandidates = [];
+      let requestSequence = 0;
+      let locationsSequence = 0;
+      let municipalitiesSequence = 0;
+
+      function setStatus(message, isError = false) {
+        statusMessage.textContent = message;
+        statusBox.classList.toggle("error", isError);
+      }
+
+      function clearPreviousResults() {
+        resultsSection.hidden = true;
+        updated.textContent = "";
+      }
+
+      function makeElement(tag, className, text) {
+        const element = document.createElement(tag);
+        element.className = className;
+        element.textContent = text;
+        return element;
+      }
+
+      function updatePartyOptions(candidates) {
+        const selectedParty = partySelect.value;
+        const parties = [...new Set(candidates.map((candidate) => candidate.party).filter(Boolean))]
+          .sort((first, second) => first.localeCompare(second, "pt-BR"));
+        partySelect.replaceChildren(new Option("Todas as legendas", ""));
+        for (const party of parties) {
+          partySelect.add(new Option(party, party));
+        }
+        partySelect.disabled = parties.length === 0;
+        if (parties.includes(selectedParty)) {
+          partySelect.value = selectedParty;
+        }
+      }
+
+      function renderCandidates() {
+        candidateList.replaceChildren();
+        const party = partySelect.value;
+        const visibleCandidates = party
+          ? currentCandidates.filter((candidate) => candidate.party === party)
+          : currentCandidates;
+        emptyState.hidden = visibleCandidates.length > 0;
+        emptyState.textContent = currentCandidates.length === 0
+          ? "O TSE ainda não publicou a votação dos candidatos para esta eleição."
+          : "Nenhum candidato encontrado para a legenda selecionada.";
+        document.getElementById("candidate-count").textContent = party
+          ? `Exibindo ${numberFormat.format(visibleCandidates.length)} de ${numberFormat.format(currentCandidates.length)} candidatos`
+          : `${numberFormat.format(currentCandidates.length)} candidatos`;
+        for (const [index, candidate] of visibleCandidates.entries()) {
+          const row = document.createElement("div");
+          row.className = candidate.highlightStatus === "elected"
+            ? "candidate candidate--in-seat candidate--elected"
+            : candidate.inSeat
+              ? "candidate candidate--in-seat"
+              : "candidate";
+          row.append(
+            makeElement("span", "candidate-rank", String(index + 1)),
+          );
+          const identity = document.createElement("div");
+          identity.className = "candidate-identity";
+          const photo = document.createElement("div");
+          photo.className = "candidate-photo";
+          photo.setAttribute("aria-hidden", "true");
+          photo.append(makeElement(
+            "span",
+            "",
+            (candidate.name || candidate.number || "?")
+              .split(/\s+/)
+              .filter(Boolean)
+              .slice(0, 2)
+              .map((part) => part[0])
+              .join("")
+              .toLocaleUpperCase("pt-BR"),
+          ));
+          if (candidate.photoUrl) {
+            const image = document.createElement("img");
+            image.src = candidate.photoUrl;
+            image.alt = `Foto oficial de ${candidate.name || `candidato ${candidate.number}`}`;
+            image.loading = "lazy";
+            image.addEventListener("error", () => image.remove(), { once: true });
+            photo.append(image);
+          }
+          identity.append(photo);
+          const info = document.createElement("div");
+          info.className = "candidate-info";
+          const title = document.createElement("div");
+          title.className = "candidate-title";
+          title.append(
+            makeElement("div", "candidate-name", candidate.name || `Candidato ${candidate.number}`),
+          );
+          if (candidate.inSeat) {
+            const badgeLabel = {
+              majority: "MAIORIA ABSOLUTA",
+              second_round: "2º TURNO",
+              seat: "NA VAGA",
+              elected: "ELEITO PELO TSE",
+            }[candidate.highlightStatus] || "DESTAQUE";
+            title.append(makeElement("span", "candidate-seat-badge", badgeLabel));
+          }
+          info.append(title);
+          info.append(makeElement("div", "candidate-party", `${candidate.party} · ${candidate.number}`));
+          identity.append(info);
+          row.append(identity);
+          row.append(makeElement("span", "candidate-votes", `${numberFormat.format(candidate.votes)} votos`));
+          row.append(makeElement("span", "candidate-percent", `${candidate.percentage}%`));
+          candidateList.append(row);
+        }
+      }
+
+      function renderResults(data) {
+        const totalized = data.sections.totalized;
+        const totalSections = data.sections.total;
+        const percentage = Number(data.sections.percentage.replace(",", ".")) || 0;
+        document.getElementById("sections-value").textContent =
+          `${numberFormat.format(totalized)} / ${numberFormat.format(totalSections)}`;
+        document.getElementById("sections-detail").textContent =
+          `${percentage.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}% das seções`;
+        document.getElementById("progress-fill").style.width =
+          `${Math.min(100, Math.max(0, percentage))}%`;
+        document.getElementById("valid-votes").textContent = numberFormat.format(data.votes.valid);
+        document.getElementById("total-votes").textContent = numberFormat.format(data.votes.total);
+        document.getElementById("blank-votes").textContent =
+          data.votes.blank == null ? "—" : numberFormat.format(data.votes.blank);
+        document.getElementById("null-votes").textContent =
+          data.votes.null == null ? "—" : numberFormat.format(data.votes.null);
+        document.getElementById("candidates-title").textContent = `${data.cargo} — ${data.location}`;
+        const highlightLegend = document.querySelector(".seat-legend");
+        highlightLegend.title =
+          `Destaque calculado com base nos dados do TSE: ${data.highlightBasis}.`;
+        highlightLegend.lastChild.textContent = data.candidates.some(
+          (candidate) => candidate.officiallyElected,
+        )
+          ? "Cor forte: eleito oficialmente pelo TSE"
+          : data.highlightLabel;
+        currentCandidates = data.candidates;
+        updatePartyOptions(currentCandidates);
+        renderCandidates();
+        updated.textContent = data.lastUpdated ? `Atualizado em ${data.lastUpdated}` : "";
+        const link = document.createElement("a");
+        link.href = data.officialUrl;
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        link.textContent = " Abrir resultados no portal do TSE.";
+        document.getElementById("official-link-container").replaceChildren(link);
+        resultsSection.hidden = false;
+
+        if (totalized === 0) {
+          setStatus("A apuração ainda não começou: o TSE não totalizou seções.");
+        } else {
+          setStatus("Resultados recebidos da API oficial do TSE.");
+        }
+      }
+
+      async function loadResults() {
+        const electionId = electionSelect.value;
+        const cargoCode = cargoSelect.value;
+        const stateCode = stateSelect.value;
+        const municipalityCode = municipalitySelect.value;
+        if (!electionId || !cargoCode || !stateCode) {
+          clearPreviousResults();
+          setStatus("Selecione a eleição, o cargo e o estado para consultar a apuração.");
+          return;
+        }
+        const currentRequest = ++requestSequence;
+        refreshButton.disabled = true;
+        setStatus("Consultando os dados oficiais do TSE...");
+        try {
+          const params = new URLSearchParams({
+            election: electionId,
+            cargo: cargoCode,
+            state: stateCode,
+          });
+          if (municipalityCode) params.set("municipality", municipalityCode);
+          const response = await fetch(`/api/results?${params}`);
+          const data = await response.json();
+          if (!response.ok) throw new Error(data.error || `Erro HTTP ${response.status}`);
+          if (currentRequest !== requestSequence) return;
+          renderResults(data);
+        } catch (error) {
+          if (currentRequest !== requestSequence) return;
+          setStatus(`Não foi possível atualizar os resultados: ${error.message}`, true);
+        } finally {
+          if (currentRequest === requestSequence) refreshButton.disabled = false;
+        }
+      }
+
+      function selectedElection() {
+        return elections.find((election) => election.id === electionSelect.value);
+      }
+
+      function updateCargoOptions() {
+        const election = selectedElection();
+        const previousCargo = cargoSelect.value;
+        cargoSelect.replaceChildren();
+        if (!election) {
+          cargoSelect.add(new Option("Selecione um cargo", ""));
+          cargoSelect.disabled = true;
+          return;
+        }
+
+        const availableCargos = election.cargos.filter((cargo) => {
+          if (election.type === "8") return cargo.code === "1";
+          if (stateSelect.value === "df") return cargo.code !== "7";
+          return cargo.code !== "8";
+        });
+        for (const cargo of availableCargos) {
+          cargoSelect.add(new Option(cargo.name, cargo.code));
+        }
+        cargoSelect.disabled = availableCargos.length === 0;
+        if (availableCargos.some((cargo) => cargo.code === previousCargo)) {
+          cargoSelect.value = previousCargo;
+        } else if (availableCargos.length > 0) {
+          cargoSelect.selectedIndex = 0;
+        }
+      }
+
+      function updateMunicipalityOptions(municipalities = []) {
+        municipalitySelect.replaceChildren();
+        municipalitySelect.add(new Option("Todas as cidades do estado", ""));
+        for (const municipality of municipalities) {
+          municipalitySelect.add(new Option(municipality.name, municipality.code));
+        }
+        municipalitySelect.disabled = !stateSelect.value || stateSelect.value === "br";
+      }
+
+      async function loadLocations() {
+        const electionId = electionSelect.value;
+        if (!electionId) return;
+        const currentRequest = ++locationsSequence;
+        const previousState = stateSelect.value;
+        stateSelect.disabled = true;
+        stateSelect.replaceChildren(new Option("Carregando estados...", ""));
+        updateMunicipalityOptions();
+        try {
+          const response = await fetch(`/api/locations?election=${encodeURIComponent(electionId)}`);
+          const data = await response.json();
+          if (!response.ok) throw new Error(data.error || `Erro HTTP ${response.status}`);
+          if (currentRequest !== locationsSequence) return;
+          stateSelect.replaceChildren();
+          if (selectedElection().type === "8") {
+            stateSelect.add(new Option("Brasil — todas as UFs", "br"));
+          } else {
+            stateSelect.add(new Option("Selecione um estado...", ""));
+          }
+          for (const state of data.states) {
+            stateSelect.add(new Option(state.name, state.code));
+          }
+          stateSelect.disabled = false;
+          if ([...stateSelect.options].some((option) => option.value === previousState)) {
+            stateSelect.value = previousState;
+          } else if (selectedElection().type === "8") {
+            stateSelect.value = "br";
+          }
+          updateCargoOptions();
+          if (stateSelect.value && stateSelect.value !== "br") {
+            await loadMunicipalities(false);
+          } else {
+            updateMunicipalityOptions();
+            await loadResults();
+          }
+        } catch (error) {
+          if (currentRequest !== locationsSequence) return;
+          stateSelect.replaceChildren(new Option("Não foi possível carregar os estados", ""));
+          setStatus(`Não foi possível carregar os estados do TSE: ${error.message}`, true);
+        }
+      }
+
+      async function loadMunicipalities(shouldLoadResults = true) {
+        const electionId = electionSelect.value;
+        const stateCode = stateSelect.value;
+        if (!electionId || !stateCode || stateCode === "br") {
+          updateMunicipalityOptions();
+          if (shouldLoadResults) await loadResults();
+          return;
+        }
+        const currentRequest = ++municipalitiesSequence;
+        const previousMunicipality = municipalitySelect.value;
+        try {
+          const params = new URLSearchParams({ election: electionId, state: stateCode });
+          const response = await fetch(`/api/locations?${params}`);
+          const data = await response.json();
+          if (!response.ok) throw new Error(data.error || `Erro HTTP ${response.status}`);
+          if (currentRequest !== municipalitiesSequence) return;
+          updateMunicipalityOptions(data.municipalities);
+          if (data.municipalities.some((municipality) => municipality.code === previousMunicipality)) {
+            municipalitySelect.value = previousMunicipality;
+          }
+          if (shouldLoadResults) await loadResults();
+        } catch (error) {
+          if (currentRequest !== municipalitiesSequence) return;
+          setStatus(`Não foi possível carregar as cidades do TSE: ${error.message}`, true);
+        }
+      }
+
+      async function loadElections() {
+        try {
+          const response = await fetch("/api/elections");
+          const data = await response.json();
+          if (!response.ok) throw new Error(data.error || `Erro HTTP ${response.status}`);
+          elections = data.elections;
+          electionSelect.replaceChildren();
+          if (elections.length === 0) {
+            electionSelect.add(new Option("Nenhuma eleição disponível no TSE", ""));
+            setStatus("A configuração do TSE ainda não disponibilizou eleições de 2026.", true);
+            return;
+          }
+          for (const election of elections) {
+            electionSelect.add(new Option(election.name, election.id));
+          }
+          electionSelect.disabled = false;
+          updateCargoOptions();
+          await loadLocations();
+        } catch (error) {
+          electionSelect.replaceChildren(new Option("Não foi possível carregar as eleições", ""));
+          setStatus(`Não foi possível carregar as eleições: ${error.message}`, true);
+        }
+      }
+
+      electionSelect.addEventListener("change", () => {
+        clearPreviousResults();
+        partySelect.value = "";
+        updateCargoOptions();
+        loadLocations();
+      });
+      cargoSelect.addEventListener("change", () => {
+        clearPreviousResults();
+        partySelect.value = "";
+        loadResults();
+      });
+      stateSelect.addEventListener("change", () => {
+        clearPreviousResults();
+        partySelect.value = "";
+        updateCargoOptions();
+        loadMunicipalities();
+      });
+      municipalitySelect.addEventListener("change", () => {
+        clearPreviousResults();
+        partySelect.value = "";
+        loadResults();
+      });
+      partySelect.addEventListener("change", renderCandidates);
+      refreshButton.addEventListener("click", loadResults);
+      loadElections();
+      window.setInterval(loadResults, 30000);
+    </script>
+  </body>
+</html>
